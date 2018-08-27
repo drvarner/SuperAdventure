@@ -84,12 +84,77 @@ namespace Engine
 
         private static void PopulateQuests()
         {
+            Quest clearAlchemistGarden = new Quest(QUEST_ID_CLEAR_ALCHEMIST_GARDEN,
+                "Clear the alchemist's garden",
+                "Kill rats in the alchemist's garden and bring back 3 rat tails. You will receive a healing potion and 10 gold pieces.", 20, 10);
+            clearAlchemistGarden.QuestCompletionItems.Add(new QuestCompletionItem(ItemByID(ITEM_ID_RAT_TAIL), 3));
+            clearAlchemistGarden.RewardItem = ItemByID(ITEM_ID_HEALING_POTION);
 
+            Quest clearFarmersField = new Quest(QUEST_ID_CLEAR_FARMERS_FIELD,
+                "Clear the farmer's field",
+                "Kill snakes in the farmer's field and bring back 3 snake fangs. You will receive an adventurer's pass and 20 gold pieces.", 20, 20);
+            clearFarmersField.QuestCompletionItems.Add(new QuestCompletionItem(ItemByID(ITEM_ID_SNAKE_FANG), 3));
+            clearFarmersField.RewardItem = ItemByID(ITEM_ID_ADVENTURER_PASS);
+
+            Quests.Add(clearAlchemistGarden);
+            Quests.Add(clearFarmersField);
         }
 
         private static void PopulateLocations()
         {
             // Create each location
+            Location home = new Location(LOCATION_ID_HOME, "Home",
+                "Your house. You really need to clean up the place.");
+            Location townSquare = new Location(LOCATION_ID_TOWN_SQUARE, "Town square", "You see a fountain.");
+            Location alchemistHut = new Location(LOCATION_ID_ALCHEMIST_HUT, "Alchemist's hut", "There are many strange plants on the shelves.");
+            alchemistHut.QuestAvailableHere = QuestByID(QUEST_ID_CLEAR_ALCHEMIST_GARDEN);
+            Location alchemistGarden = new Location(LOCATION_ID_ALCHEMISTS_GARDEN, "Alchemist's garden", "Many plants are growing here.");
+            alchemistGarden.MonsterLivingHere = MonsterByID(MONSTER_ID_RAT);
+            Location farmhouse = new Location(LOCATION_ID_FARMHOUSE, "Farmhouse", "There is a small farmhouse with a farmer in front.");
+            farmhouse.QuestAvailableHere = QuestByID(QUEST_ID_CLEAR_FARMERS_FIELD);
+            Location farmersField = new Location(LOCATION_ID_FARM_FIELD, "Farmer's field", "You see rows of vegetables growing here.");
+            farmersField.MonsterLivingHere = MonsterByID(MONSTER_ID_SNAKE);
+            Location guardPost = new Location(LOCATION_ID_GUARD_POST, "Guard post", "There is a large, tough-looking guard here.", ItemByID(ITEM_ID_ADVENTURER_PASS));
+            Location bridge = new Location(LOCATION_ID_BRIDGE, "Bridge", "A stone bridge crosses a wide river.");
+            Location spiderField = new Location(LOCATION_ID_SPIDER_FIELD, "Forest", "You see spider webs covering the trees in this forest.");
+            spiderField.MonsterLivingHere = MonsterByID(MONSTER_ID_GIANT_SPIDER);
+
+
+            // Link locations together
+            home.LocationToNorth = townSquare;
+
+            townSquare.LocationToNorth = alchemistHut;
+            townSquare.LocationToSouth = home;
+            townSquare.LocationToEast = guardPost;
+            townSquare.LocationToWest = farmhouse;
+
+            farmhouse.LocationToEast = townSquare;
+            farmhouse.LocationToWest = farmersField;
+
+            farmersField.LocationToEast = farmhouse;
+
+            alchemistHut.LocationToNorth = alchemistGarden;
+            alchemistHut.LocationToSouth = townSquare;
+
+            alchemistGarden.LocationToSouth = alchemistHut;
+
+            guardPost.LocationToEast = bridge;
+            guardPost.LocationToWest = townSquare;
+
+            bridge.LocationToWest = guardPost;
+            bridge.LocationToEast = spiderField;
+
+            spiderField.LocationToWest = bridge;
+
+            Locations.Add(home);
+            Locations.Add(townSquare);
+            Locations.Add(guardPost);
+            Locations.Add(alchemistHut);
+            Locations.Add(alchemistGarden);
+            Locations.Add(farmhouse);
+            Locations.Add(farmersField);
+            Locations.Add(bridge);
+            Locations.Add(spiderField);
         }
 
         public static Item ItemByID(int id)
@@ -116,7 +181,7 @@ namespace Engine
             return null;
         }
 
-        public static Quest QuestById(int id)
+        public static Quest QuestByID(int id)
         {
             foreach(Quest quest in Quests)
             {
